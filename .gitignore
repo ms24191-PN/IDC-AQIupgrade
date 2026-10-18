@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Data (don't push raw datasets, they're too large)
+data/raw/
+*.csv
+
+# Keep the database but not temp files
+*.db-journal
+
+# Environment
+.venv/
+venv/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
