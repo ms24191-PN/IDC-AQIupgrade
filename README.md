@@ -558,8 +558,8 @@ Please follow the dataset provider's terms and applicable licensing conditions w
 
 ## 16. Author
 
-**Name:** Add your name here
+**Name:** Achalesh,Peehu, and Vaibhav
 
-**Institution:** Add your institution here
+**Institution:** IISER Mohali
 
-**Project:** Indian Air Quality Analysis and AQI Prediction Using Machine Learning
+**Project:** Air Quality Prediction
