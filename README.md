@@ -458,11 +458,8 @@ Indian-Air-Quality-Prediction/
 ├── README.md
 ├── requirements.txt
 ├── notebooks/
-│   ├── data_cleaning_and_eda.ipynb
-│   ├── pollutant_based_aqi_prediction.ipynb
-│   └── city_specific_next_day_aqi.ipynb
-├── results/
-│   └── README.md
+│   ├── AQI predication and Next day AQI predication - CSV pipeline.ipynb
+│   └── EDA_notebook.ipynb
 └── data/
     └── AQI_data.csv
 ```
