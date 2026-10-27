@@ -1,4 +1,4 @@
-# Indian Air Quality Analysis and AQI Prediction Using Machine Learning
+# Air Quality Prediction
 
 ## 1. Project Overview
 
