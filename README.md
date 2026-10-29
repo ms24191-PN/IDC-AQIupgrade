@@ -61,7 +61,9 @@ Exploratory data analysis was conducted to understand the data distribution, tem
 The analysis included:
 
 - Examining dataset structure and summary statistics.
+- Deleting all the data points where the AQI was missing
 - Checking missing values and duplicate observations.
+- Filling the nan values using median method.
 - Investigating pollutant distributions and outliers.
 - Visualizing AQI variations across months and years.
 - Comparing air-quality patterns across cities.
@@ -75,7 +77,7 @@ This observation suggests that air quality varies seasonally. However, the visua
 
 The observed trend may be investigated further using meteorological variables, pollutant concentrations, and seasonal differences between cities.
 
-## 5. Part I: AQI Prediction Using Pollutant Concentrations
+## 5. Part I: AQI Prediction Using Pollutant Concentration Values
 
 ### 5.1 Problem formulation
 
@@ -187,7 +189,7 @@ Random Forest achieved the best overall performance among the three models evalu
 
 ## 6. Feature Importance Analysis
 
-Feature importance was examined to understand the relative contribution of pollutant variables to the predictions.
+Feature importance was examined to understand the relative contribution of pollutant variables to the predictions(was done to see the relationship with the target variable and no feature was removed).
 
 ### 6.1 Linear Regression
 
@@ -285,7 +287,7 @@ Each model uses the historical AQI pattern of its corresponding city to predict 
 
 ### 7.3 Input features
 
-The following historical AQI features were used:
+The following historical AQI features(because they help in time - series pattern learning to the model) were used:
 
 ```python
 [
@@ -340,7 +342,7 @@ Each city has its own optimized hyperparameters and evaluation results.
 *CV MAE refers to the best cross-validation MAE reported during hyperparameter optimization. Test metrics refer to evaluation on the held-out test period.*
 
 ### 8.2 Optimized hyperparameters
-
+All the hyperparameters are found with the help of RandomizedSearchCV for Random Forest regression model(as this was the best model for the predication)
 #### Bengaluru
 
 ```python
@@ -464,8 +466,7 @@ Indian-Air-Quality-Prediction/
     └── AQI_data.csv
 ```
 
-Adjust the file names and folders to match the actual repository. The `data/` directory can contain instructions for obtaining the dataset rather than the dataset itself.
-
+Adjust the file names and folders to match the actual repository. 
 ## 11. Installation and Setup
 
 ### Prerequisites
@@ -477,8 +478,8 @@ Adjust the file names and folders to match the actual repository. The `data/` di
 ### Step 1: Clone the repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
-cd YOUR-REPOSITORY
+git clone https://github.com/ms24191-PN/IDC-AQIupgrade.git
+cd IDC-AQIupgrade
 ```
 
 Replace the placeholders with your GitHub username and repository name.
@@ -491,7 +492,7 @@ If a `requirements.txt` file is provided:
 pip install -r requirements.txt
 ```
 
-Otherwise, install the main dependencies:
+Otherwise(if not getting installed, then manual install them all), install the main dependencies:
 
 ```bash
 pip install pandas numpy matplotlib seaborn scikit-learn jupyter
@@ -507,7 +508,7 @@ Place the relevant CSV file in the expected data directory or update the file pa
 
 ### Step 4: Run the notebooks
 
-Open the notebooks using Jupyter Notebook or Google Colab.
+Open the notebooks using Jupyter Notebook or Google Colab(We have used this for our project).
 
 Run the data preparation and EDA notebook first, followed by the pollutant-based AQI prediction and city-specific next-day prediction notebooks.
 
@@ -555,7 +556,7 @@ Please follow the dataset provider's terms and applicable licensing conditions w
 
 ## 16. Author
 
-**Name:** Achalesh,Peehu, and Vaibhav
+**Name:** Achalesh Nimbiwal(MS24255),Peehu(MS24191), and Vaibhav(MS24090)
 
 **Institution:** IISER Mohali
 
