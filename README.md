@@ -4,7 +4,7 @@
 
 Air pollution is a major environmental concern in India, affecting public health and environmental quality. The Air Quality Index (AQI) provides a numerical representation of air pollution levels based on measured pollutant concentrations.
 
-This project analyzes Indian air-quality data from 2015 to 2020 using exploratory data analysis (EDA) and machine learning techniques. It has two main components:
+This project looks at daily air quality data from Indian cities and builds regression models to predict the Air Quality Index (AQI). It has two parts:
 
 1. **AQI prediction using pollutant concentrations:** Regression models are trained to predict AQI using twelve pollutant-related features.
 2. **City-specific next-day AQI prediction:** Separate Random Forest regression models are trained for six Indian cities using historical AQI values and lag-based features.
@@ -54,20 +54,39 @@ The dataset contains air-quality measurements collected from monitoring location
 
 The pollutant measurements are used as input features for the first part of the project, while AQI is the target variable.
 
-## 4. Exploratory Data Analysis (EDA)
+## 4. What the notebook does
 
-Exploratory data analysis was conducted to understand the data distribution, temporal variation, and relationships between air pollutants.
+**4.1. Loading and cleaning**
+- Downloads the dataset and reads `city_day.csv`.
+- Drops rows where `AQI` is missing.
+- Fills missing pollutant values with the median of each pollutant column.
+- Checks null counts, duplicate rows, city names, record count per city and the type of the `Date` column.
 
-The analysis included:
+**4.2. Feature creation**
+- Converts `Date` to datetime and extracts `Year`, `Month`, `Day` and `Weekday`.
+- Adds `Season` using standard Northern Hemisphere months (Winter: Dec-Feb, Spring: Mar-May, Summer: Jun-Aug, Monsoon: Sep-Nov).
+- Adds a `Winter` flag (1 for Dec, Jan, Feb, otherwise 0).
+- Keeps a copy of the processed data as `AQI_data`. A commented-out cell exports it to CSV.
 
-- Examining dataset structure and summary statistics.
-- Deleting all the data points where the AQI was missing
-- Checking missing values and duplicate observations.
-- Filling the nan values using median method.
-- Investigating pollutant distributions and outliers.
-- Visualizing AQI variations across months and years.
-- Comparing air-quality patterns across cities.
-- Constructing a pollutant correlation heatmap.
+**4.3. Exploratory analysis**
+- Average yearly AQI for every city (line plot).
+- The 10 cities with the most AQI records, their yearly averages, a ranking table by average AQI, and a summary of the highest and lowest cities.
+- Daily and monthly AQI for Delhi, Mumbai, Chandigarh, Bengaluru, Chennai and Hyderabad between Sep 2019 and Jul 2020.
+- Box plot of the pollutant values and a Pearson correlation heatmap of the pollutants.
+- For each city, daily and monthly AQI curves with one line per year, to show seasonal patterns.
+
+**4.4. Same-day AQI models**
+- Features are the 12 pollutants and the target is `AQI`. The data is split 80/20 with `random_state=42`.
+- Linear Regression (baseline), Decision Tree (`max_depth=10`, `min_samples_leaf=20`) and Random Forest (`n_estimators=120`, `max_depth=20`, `max_features=0.5`, `min_samples_split=10`).
+- Each model is scored with MAE, RMSE and R2, and feature importance is shown for all three. For Linear Regression, the absolute coefficients are used.
+- A correlation filter (threshold 0.90) is computed to find redundant pollutants, but the models above are trained on all 12 features.
+- The Random Forest is also tested on two hand-entered pollutant samples whose actual AQI values were 80 and 127.
+- A commented-out block shows how to save the Linear Regression model with `joblib` and use it on a new CSV.
+
+**4.5. Next-day AQI model**
+- Features are built from each city's own history: AQI of the previous 1, 2, 3 and 7 days, and the mean of the previous 3 and 7 days.
+- A Random Forest is tuned separately for each city, and the best parameters and results are listed below.
+- The final models are trained on all available rows of each city. The notebook asks for a city name and predicts the AQI for the day after the last date recorded in the dataset.
 
 ### Key observation: Monthly AQI variation
 
@@ -328,16 +347,16 @@ Each city has its own optimized hyperparameters and evaluation results.
 
 ## 8. Next-Day AQI Prediction Results
 
-### 8.1 Model performance by city
+### 8.1 Next-day AQI by city (Random Forest, test set)
 
-| City | CV MAE | Test MAE | Test RMSE | Test R² |
-|---|---:|---:|---:|---:|
-| Bengaluru | 20.555 | 9.191 | 12.404 | 0.600 |
-| Delhi | 45.572 | 32.746 | 44.657 | 0.846 |
-| Hyderabad | 18.256 | 11.352 | 15.353 | 0.814 |
-| Mumbai | 20.858 | 11.803 | 18.075 | 0.825 |
-| Chandigarh | 31.064 | 12.442 | 15.690 | 0.223 |
-| Chennai | 26.975 | 18.132 | 26.040 | 0.475 |
+| City | CV MAE | Test MAE | Test RMSE | Test R2 |
+|---|---|---|---|---|
+| Bengaluru | 20.56 | 9.19 | 12.40 | 0.600 |
+| Delhi | 45.57 | 32.75 | 44.66 | 0.846 |
+| Hyderabad | 18.26 | 11.35 | 15.35 | 0.814 |
+| Mumbai | 20.86 | 11.80 | 18.08 | 0.825 |
+| Chandigarh | 31.06 | 12.44 | 15.69 | 0.223 |
+| Chennai | 26.98 | 18.13 | 26.04 | 0.475 |
 
 *CV MAE refers to the best cross-validation MAE reported during hyperparameter optimization. Test metrics refer to evaluation on the held-out test period.*
 
@@ -436,21 +455,7 @@ The difference between MAE and R² across cities highlights why multiple evaluat
 
 The results support evaluating each city separately rather than assuming that one model will perform equally well across all cities. However, they do not by themselves establish that city-specific models will always outperform a pooled model; that requires a direct comparison using the same temporal evaluation procedure.
 
-## 9. Technologies and Libraries
-
-The project uses:
-
-- Python
-- Pandas
-- NumPy
-- Matplotlib
-- Seaborn
-- Scikit-learn
-- Jupyter Notebook / Google Colab
-
-Scikit-learn is used for regression modeling, model evaluation, feature importance, and hyperparameter optimization with RandomizedSearchCV.
-
-## 10. Repository Structure
+## 9. Repository Structure
 
 The repository can be organized as follows:
 
@@ -467,54 +472,32 @@ Indian-Air-Quality-Prediction/
 ```
 
 Adjust the file names and folders to match the actual repository. 
-## 11. Installation and Setup
+## 10. Installation and Setup
 
 ### Prerequisites
 
-- Python 3.10 or a compatible Python version.
-- Jupyter Notebook or Google Colab.
-- Git, if running the project locally.
+Python 3 with:
 
-### Step 1: Clone the repository
-
-```bash
-git clone https://github.com/ms24191-PN/IDC-AQIupgrade.git
-cd IDC-AQIupgrade
+```
+kagglehub
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+joblib
 ```
 
-Replace the placeholders with your GitHub username and repository name.
+Install with `pip install kagglehub pandas numpy matplotlib seaborn scikit-learn joblib`. Downloading the dataset may need a Kaggle account.
 
-### Step 2: Install dependencies
+## How to run
 
-If a `requirements.txt` file is provided:
+1. Open the notebook in Jupyter or Google Colab.
+2. Run all cells from top to bottom. Later cells depend on variables from earlier ones.
+3. In the last cell, type one of Delhi, Bengaluru, Chennai, Hyderabad, Mumbai or Chandigarh when asked to get the next-day forecast.
+4. To save the cleaned data, uncomment the export cell. Outside Colab, use only `data.to_csv('AQI_data.csv', index=False)`.
 
-```bash
-pip install -r requirements.txt
-```
-
-Otherwise(if not getting installed, then manual install them all), install the main dependencies:
-
-```bash
-pip install pandas numpy matplotlib seaborn scikit-learn jupyter
-```
-
-### Step 3: Download the dataset
-
-Download the dataset from:
-
-https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india
-
-Place the relevant CSV file in the expected data directory or update the file path in the notebooks.
-
-### Step 4: Run the notebooks
-
-Open the notebooks using Jupyter Notebook or Google Colab(We have used this for our project).
-
-Run the data preparation and EDA notebook first, followed by the pollutant-based AQI prediction and city-specific next-day prediction notebooks.
-
-Ensure that all file paths match the environment in which the notebooks are executed.
-
-## 12. Limitations
+## 11. Limitations
 
 - Prediction quality depends on the quality and completeness of the historical data.
 - Pollutant-based regression estimates AQI from pollutant measurements and does not independently forecast future pollutant concentrations.
@@ -523,7 +506,7 @@ Ensure that all file paths match the environment in which the notebooks are exec
 - Correlation and feature importance do not establish causal relationships.
 - Predictions should not be treated as official AQI measurements or public-health advisories.
 
-## 13. Future Scope
+## 12. Future Scope
 
 Potential extensions include:
 
@@ -534,7 +517,7 @@ Potential extensions include:
 - Extending the analysis to more Indian cities and newer observations.
 - Developing an interactive application for city-wise AQI prediction.
 
-## 14. Conclusion
+## 13. Conclusion
 
 This project investigates Indian air-quality patterns and applies machine learning to AQI prediction.
 
@@ -544,7 +527,7 @@ In the second part, six separate Random Forest models were developed for next-da
 
 The project demonstrates two complementary approaches to AQI modeling: estimating AQI from pollutant concentrations and forecasting AQI from historical temporal patterns.
 
-## 15. Dataset Attribution
+## 14. Dataset Attribution
 
 The dataset was obtained from Kaggle:
 
@@ -554,7 +537,7 @@ Dataset link: https://www.kaggle.com/datasets/rohanrao/air-quality-data-in-india
 
 Please follow the dataset provider's terms and applicable licensing conditions when redistributing the data.
 
-## 16. Author
+## 15. Author
 
 **Name:** Achalesh Nimbiwal(MS24255),Peehu(MS24191), and Vaibhav(MS24090)
 
